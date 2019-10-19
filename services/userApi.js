@@ -4,6 +4,7 @@ module.exports = class UserApi {
   }
 
   findAll (){
+    console.log('asdasds')
     return this.userDb.findAll();
   }
 
@@ -20,6 +21,7 @@ module.exports = class UserApi {
   get(id){
     return this.userDb.findAll({where: {id}})
   }
+
   delete(id){
     return this.userDb.destroy({where: {id}})
   }

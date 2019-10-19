@@ -4,8 +4,10 @@ const port = 4201
 const Sequelize = require('sequelize');
 const InitDb = require('./initdb')
 const UserModel = require('./userModel')
-const UserApi = require('./services/userApi')
 const bodyParser     =         require("body-parser");
+var { buildSchema } = require('graphql');
+var graphqlHTTP = require('express-graphql');
+const UserGraphQl = require('./userGraphql')
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -15,37 +17,15 @@ const sequelize = new Sequelize('postgres', 'postgres', 'mysecretpassword', {
   dialect:'postgres'
 });
 const User = sequelize.define('user', UserModel, {});
-const userApi = new UserApi(User);
+const userGraphQl = new UserGraphQl(User)
 InitDb(sequelize).then(() => {
-  app.get('/users', async (req, res) => {
-    users = await userApi.findAll();
-    res.send(users)
-  });
+  var schema = buildSchema(userGraphQl.getBuildSchema());
 
-  app.post('/user', async (req, res)=> {
-    const {firstName, lastName, userName} = req.body;
-    const user = await userApi.insert(firstName, lastName, userName);
-    res.send(`Successfully create user ${user.id}`)
-  });
-
-  app.get('/user/:id', async (req, res) => {
-    const id = req.params.id
-    const user = await userApi.get(id)
-    res.send(user)
-  });
-
-  app.patch('/user/:id', async (req, res)=> {
-    const id = req.params.id
-    const {firstName, lastName, userName} = req.body;
-    const user = await userApi.update(id, {firstName, lastName, userName});
-    res.send(`Successfully updated user ${id}`)
-  });
-
-  app.delete('/user/:id', async (req, res) => {
-    const id = req.params.id
-    await userApi.delete(id)
-    res.send(`Successfuly remove user ${id}`)
-  });
+  app.use('/graphql', graphqlHTTP({
+    schema: schema,
+    rootValue: userGraphQl.getResolver(),
+    graphiql: true,
+  }));
 
   app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 });
