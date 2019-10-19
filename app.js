@@ -8,9 +8,11 @@ const bodyParser     =         require("body-parser");
 var { buildSchema } = require('graphql');
 var graphqlHTTP = require('express-graphql');
 const UserGraphQl = require('./userGraphql')
+var cors = require('cors')
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cors());
 
 const sequelize = new Sequelize('postgres', 'postgres', 'mysecretpassword', {
   port: 5433,
