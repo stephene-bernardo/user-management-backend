@@ -14,6 +14,8 @@ var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
 const UserAuthApi = require('./services/userAuthApi')
 const UserApi = require('./services/userApi')
+const authMiddleware = require('./middlewareAuth');
+const bcrypt = require('bcrypt')
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -32,36 +34,33 @@ const userApi = new UserApi(User);
 
 passport.use(new Strategy(
   async function(username, password, cb) {
-    console.log("hi")
     let users = await userApi.findAll();
     let user = users.find(user => user.userName === username);
 
     if(!user){
       return cb(null, false);
     }
-    let userAuth = await userAuthApi.get(user.id);
+    let [userAuth] = await userAuthApi.get(user.id);
     if(!userAuth){
       return cb(null, false);
     }
-    if(userAuth.password !== password){
+    // if(userAuth.password !== password){
+    //   return cb(null, false);
+    // }
+    if(!bcrypt.compareSync(password, userAuth.password)){
       return cb(null, false);
     }
-    console.log('asdasdas')
-
     return cb(null, user);
 
   }));
 
 
 passport.serializeUser(function(user, cb) {
-  cb(null, user.id);
+  cb(null, user);
 });
 
-passport.deserializeUser(function(id, cb) {
-  userAuthApi.get(userId).then((user, err)=>{
-    if (err) { return cb(err); }
-    cb(null, user);
-  });
+passport.deserializeUser(function(user, cb) {
+  cb(null, user);
 });
 InitDb(sequelize).then(() => {
   userApi.insert('karl', 'bernardo', 'lrak')
@@ -70,23 +69,15 @@ InitDb(sequelize).then(() => {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  app.get('/login',
-    function(req, res){
+  app.get('/login',  function(req, res){
       res.send('login');
     });
 
   app.post('/login',
     passport.authenticate('local', { failureRedirect: '/login' }),
     function(req, res) {
-      res.redirect('/');
+      res.send(req.session);
     });
-
-  // app.post('/login',
-  //   passport.authenticate('local', { failureRedirect: '/login' }),
-  //   function(req, res) {
-  //     console.log('asdfas')
-  //     res.redirect('/');
-  //   });
 
   var schema = buildSchema(userGraphQl.getBuildSchema());
   app.use('/graphql', graphqlHTTP({
@@ -94,6 +85,20 @@ InitDb(sequelize).then(() => {
     rootValue: userGraphQl.getResolver(),
     graphiql: true,
   }));
+
+  app.get('/profile',  authMiddleware.loginRequired,
+    function(req, res){
+      res.send('profile');
+    });
+
+  app.post('/register', function(req, res) {
+    userApi.insert(req.body.firstname, req.body.lastname, req.body.username).then(async result => {
+      var salt = bcrypt.genSaltSync(10);
+      var hash = bcrypt.hashSync(req.body.password, salt);
+      await userAuthApi.insert(result.id, hash);
+      res.send(result);
+    })
+    });
 
   app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 });

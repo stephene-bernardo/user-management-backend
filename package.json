@@ -12,7 +12,9 @@
     "nodemon": "^1.19.4"
   },
   "dependencies": {
+    "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
+    "connect-ensure-login": "^0.1.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
