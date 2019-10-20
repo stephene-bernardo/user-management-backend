@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const port = 3001;
 const Sequelize = require('sequelize');
-const InitDb = require('./initdb')
-const UserModel = require('./userModel')
+const InitDb = require('./initdb');
+const UserModel = require('./userModel');
 const UserAuthModel = require('./userAuthModel')
 const bodyParser     =         require("body-parser");
 var { buildSchema } = require('graphql');
@@ -23,7 +23,7 @@ app.use(cors());
 app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
 
 const sequelize = new Sequelize('postgres', 'postgres', 'mysecretpassword', {
-  port: 5433,
+  port: 5432,
   dialect:'postgres'
 });
 const User = sequelize.define('user', UserModel, {});
