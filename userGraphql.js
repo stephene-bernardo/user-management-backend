@@ -28,6 +28,7 @@ module.exports = class UserGraphQl {
     createUser(user: UserInput): User
     deleteUser(id: Int): Int
     updateUser(id: Int, userInput: UserInput): [Int]
+    deleteUserAuth(userId: Int): Int
   }
   type Query {
     users: [User!]!
@@ -43,7 +44,8 @@ module.exports = class UserGraphQl {
       user: ({id}) => this.userApi.get(id),
       createUser: ({user}) => this.userApi.insert(user.firstName, user.lastName, user.userName),
       deleteUser: (({id})=> this.userApi.delete(id)),
-      updateUser: (({id, userInput}) => this.userApi.update(id, userInput))
+      updateUser: (({id, userInput}) => this.userApi.update(id, userInput)),
+      deleteUserAuth: (({userId})=> this.userAuthApi.delete(userId))
     };
   }
 }

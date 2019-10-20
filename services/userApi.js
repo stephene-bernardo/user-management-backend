@@ -4,7 +4,6 @@ module.exports = class UserApi {
   }
 
   findAll (){
-    console.log('asdasds')
     return this.userDb.findAll();
   }
 
