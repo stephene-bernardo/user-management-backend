@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 4201;
+const port = 3001;
 const Sequelize = require('sequelize');
 const InitDb = require('./initdb')
 const UserModel = require('./userModel')
@@ -60,9 +60,9 @@ passport.deserializeUser(function(user, cb) {
   cb(null, user);
 });
 InitDb(sequelize).then(() => {
-  userApi.insert('karl', 'bernardo', 'lrak')
+  userApi.insert('Admin', 'Instar', 'admin')
   var salt = bcrypt.genSaltSync(10);
-  userAuthApi.insert(1, bcrypt.hashSync('lrak', salt))
+  userAuthApi.insert(1, bcrypt.hashSync('admin', salt))
 
   app.use(passport.initialize());
   app.use(passport.session());
@@ -102,9 +102,9 @@ InitDb(sequelize).then(() => {
     var salt = bcrypt.genSaltSync(10);
     var hash = bcrypt.hashSync(req.body.password, salt);
     let users = await userApi.findAll()
-    let user = users.find(user => user.userName === req.body.username)
-    await userAuthApi.delete(user.id)
-    await userAuthApi.insert(user.id, hash);
+    let user = await users.find(user => user.userName === req.body.username)
+    let abc= await userAuthApi.delete(user.id)
+    let userAuth = await userAuthApi.insert(user.id, hash);
     res.send("Successfuly Change password");
   });
 
