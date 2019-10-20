@@ -1,8 +1,10 @@
-const UserApi = require('./services/userApi')
+const UserApi = require('./services/userApi');
+const UserAuthApi = require('./services/userAuthApi');
 
 module.exports = class UserGraphQl {
-  constructor(userSequelize){
+  constructor(userSequelize, userAuthSequelize){
     this.userApi = new UserApi(userSequelize);
+    this.userAuthApi = new UserAuthApi(userAuthSequelize);
   }
 
   getBuildSchema(){
@@ -12,6 +14,10 @@ module.exports = class UserGraphQl {
     firstName: String!,
     lastName: String!,
     userName: String!
+  }
+    type UserAuth {
+    id: Int!,
+    userId: Int!
   }
    input UserInput {
     firstName: String!,
@@ -26,11 +32,13 @@ module.exports = class UserGraphQl {
   type Query {
     users: [User!]!
     user(id: Int): [User!]!
+    userAuths: [UserAuth!]!
   }`;
   }
 
   getResolver(){
     return {
+      userAuths: () => this.userAuthApi.findAll(),
       users: () => this.userApi.findAll(),
       user: ({id}) => this.userApi.get(id),
       createUser: ({user}) => this.userApi.insert(user.firstName, user.lastName, user.userName),

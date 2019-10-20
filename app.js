@@ -1,6 +1,6 @@
-const express = require('express')
-const app = express()
-const port = 4201
+const express = require('express');
+const app = express();
+const port = 4201;
 const Sequelize = require('sequelize');
 const InitDb = require('./initdb')
 const UserModel = require('./userModel')
@@ -28,7 +28,7 @@ const sequelize = new Sequelize('postgres', 'postgres', 'mysecretpassword', {
 });
 const User = sequelize.define('user', UserModel, {});
 const UserAuth = sequelize.define('userauth', UserAuthModel, {});
-const userGraphQl = new UserGraphQl(User);
+const userGraphQl = new UserGraphQl(User, UserAuth);
 const userAuthApi = new UserAuthApi(UserAuth);
 const userApi = new UserApi(User);
 
@@ -44,9 +44,6 @@ passport.use(new Strategy(
     if(!userAuth){
       return cb(null, false);
     }
-    // if(userAuth.password !== password){
-    //   return cb(null, false);
-    // }
     if(!bcrypt.compareSync(password, userAuth.password)){
       return cb(null, false);
     }
