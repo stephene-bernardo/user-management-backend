@@ -81,7 +81,7 @@ InitDb(sequelize).then(() => {
   app.use('/graphql', graphqlHTTP({
     schema: schema,
     rootValue: userGraphQl.getResolver(),
-    graphiql: true,
+    graphiql: false,
   }));
 
   app.get('/profile',  authMiddleware.loginRequired,
