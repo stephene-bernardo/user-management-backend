@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt')
+
 module.exports = class UserAuthApi {
   constructor(userAuthDb){
     this.userAuthDb = userAuthDb;

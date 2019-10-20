@@ -61,7 +61,8 @@ passport.deserializeUser(function(user, cb) {
 });
 InitDb(sequelize).then(() => {
   userApi.insert('karl', 'bernardo', 'lrak')
-  userAuthApi.insert(1, 'somepassword')
+  var salt = bcrypt.genSaltSync(10);
+  userAuthApi.insert(1, bcrypt.hashSync('lrak', salt))
 
   app.use(passport.initialize());
   app.use(passport.session());
@@ -95,7 +96,17 @@ InitDb(sequelize).then(() => {
       await userAuthApi.insert(result.id, hash);
       res.send(result);
     })
-    });
+  });
+
+  app.patch('/change-password', async function(req, res) {
+    var salt = bcrypt.genSaltSync(10);
+    var hash = bcrypt.hashSync(req.body.password, salt);
+    let users = await userApi.findAll()
+    let user = users.find(user => user.userName === req.body.username)
+    await userAuthApi.delete(user.id)
+    await userAuthApi.insert(user.id, hash);
+    res.send("Successfuly Change password");
+  });
 
   app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 });
