@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
 
 module.exports = class UserAuthApi {
   constructor(userAuthDb){
@@ -10,7 +10,9 @@ module.exports = class UserAuthApi {
   }
 
   insert(userId, password) {
-    return this.userAuthDb.create({userId, password})
+    var salt = bcrypt.genSaltSync(10);
+    var hash = bcrypt.hashSync(password, salt);
+    return this.userAuthDb.create({userId, password: hash})
   }
 
   update(userId, newValues){
