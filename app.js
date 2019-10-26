@@ -4,26 +4,31 @@ const port = 3001;
 const Sequelize = require('sequelize');
 const InitDb = require('./initdb');
 const UserModel = require('./userModel');
-const UserAuthModel = require('./userAuthModel')
+const UserAuthModel = require('./userAuthModel');
 const bodyParser     =         require("body-parser");
 var { buildSchema } = require('graphql');
 var graphqlHTTP = require('express-graphql');
-const UserGraphQl = require('./userGraphql')
-var cors = require('cors')
+const UserGraphQl = require('./userGraphql');
+var cors = require('cors');
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
-const UserAuthApi = require('./services/userAuthApi')
-const UserApi = require('./services/userApi')
+const UserAuthApi = require('./services/userAuthApi');
+const UserApi = require('./services/userApi');
 const authMiddleware = require('./middlewareAuth');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+
+const POSTGRES_PORT = process.env.POSTGRES_PORT || 5432;
+const POSTGRES_DB = process.env.POSTGRES_DB || 'postgres';
+const POSTGRES_USER = process.env.POSTGRES_USER || 'postgres';
+const POSTGRES_PASSWORD = process.env.POSTGRES_PASSWORD || 'mysecretpassword'
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
 app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
 
-const sequelize = new Sequelize('postgres', 'postgres', 'mysecretpassword', {
-  port: 5432,
+const sequelize = new Sequelize(POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD, {
+  port: POSTGRES_PORT,
   dialect:'postgres'
 });
 const User = sequelize.define('user', UserModel, {});
