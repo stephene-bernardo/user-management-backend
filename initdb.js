@@ -5,5 +5,6 @@ module.exports = async function InitDb(sequelize){
     return sequelize.sync({ force: true })
   } catch (e) {
       console.error('Unable to connect to the database:', e);
+      throw e;
   }
 };

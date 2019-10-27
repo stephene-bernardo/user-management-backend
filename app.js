@@ -17,6 +17,7 @@ const UserApi = require('./services/userApi');
 const authMiddleware = require('./middlewareAuth');
 const bcrypt = require('bcrypt');
 
+const HOST= process.env.HOST || 'localhost';
 const POSTGRES_PORT = process.env.POSTGRES_PORT || 5432;
 const POSTGRES_DB = process.env.POSTGRES_DB || 'postgres';
 const POSTGRES_USER = process.env.POSTGRES_USER || 'postgres';
@@ -110,6 +111,5 @@ InitDb(sequelize).then(() => {
     res.send("Successfuly Change password");
   });
 
-  app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+  app.listen(port, HOST , () => console.log(`Example app listening on port ${HOST}:${port}!`))
 });
-
