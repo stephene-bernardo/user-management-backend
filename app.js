@@ -26,7 +26,7 @@ const POSTGRES_HOST = process.env.POSTGRES_HOST || 'localhost';
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
 app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
 
 const sequelize = new Sequelize(POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD, {
@@ -81,6 +81,7 @@ InitDb(sequelize).then(() => {
   app.post('/login',
     passport.authenticate('local', { failureRedirect: '/login' }),
     function(req, res) {
+      console.log(req.session)
       res.send(req.session);
     });
 
@@ -93,14 +94,19 @@ InitDb(sequelize).then(() => {
 
   app.get('/profile',  authMiddleware.loginRequired,
     function(req, res){
-      res.send('profile');
+      res.send(req.session);
     });
 
-  app.post('/register', function(req, res) {
+  app.post('/register', function(req, res, next) {
+    console.log('hiiii')
+    console.log(req.body);
     userApi.insert(req.body.firstname, req.body.lastname, req.body.username).then(async result => {
       await userAuthApi.insert(result.id, req.body.password);
-      res.send(result);
+      next()
     })
+  }, passport.authenticate('local', { failureRedirect: '/login' }), 
+  function(req, res) {
+    res.send("registration completed");
   });
 
   app.patch('/change-password', async function(req, res) {
@@ -110,6 +116,11 @@ InitDb(sequelize).then(() => {
     let userAuth = await userAuthApi.insert(user.id, req.body.password);
     res.send("Successfuly Change password");
   });
+
+  app.get('/logout', (req, res) => {
+      req.session.destroy();
+      res.send('logout')
+  })
 
   app.listen(port, HOST , () => console.log(`Example app listening on port ${HOST}:${port}!`))
 });

@@ -1,10 +1,9 @@
 module.exports = {
 
   loginRequired(req, res, next) {
-    if (req.headers.userid) {
+    console.log(req.session)
+    if (req.session.passport.user.id) {
       return next();
     }
-    return res.redirect('/login');
   }
-
 };
