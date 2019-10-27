@@ -23,10 +23,11 @@ const POSTGRES_DB = process.env.POSTGRES_DB || 'postgres';
 const POSTGRES_USER = process.env.POSTGRES_USER || 'postgres';
 const POSTGRES_PASSWORD = process.env.POSTGRES_PASSWORD || 'mysecretpassword';
 const POSTGRES_HOST = process.env.POSTGRES_HOST || 'localhost';
+const USER_MANAGEMENT_FRONTEND = process.env.USER_MANAGEMENT_FRONTEND || 'http://localhost:3000'
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
+app.use(cors({credentials: true, origin: USER_MANAGEMENT_FRONTEND}));
 app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
 
 const sequelize = new Sequelize(POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD, {

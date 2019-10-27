@@ -6,6 +6,7 @@
 |POSTGRES_DB           |database name| postgres    |
 |POSTGRES_USER         |database user| postgres|
 |POSTGRES_PASSWORD     |database password| mysecretpassword|
+|USER_MANAGEMENT_FRONTEND| User management frontend url| http://localhost:3000|
 ## Requirements 
 postgres database must be running.
 
