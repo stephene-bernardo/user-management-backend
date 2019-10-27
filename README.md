@@ -7,11 +7,7 @@
 |POSTGRES_USER         |database user| postgres|
 |POSTGRES_PASSWORD     |database password| mysecretpassword|
 ## Requirements 
-#### PostgresSQL config
-* port = 5432
-* user = postgres
-* dbname = postgres
-* password = mysecretpassword
+postgres database must be running.
 
 ## setting up and running backend locally
 
@@ -20,7 +16,8 @@
 npm install
 ```
 
-#### it should run in localhost:3001
+#### run the application
 ```
 node app.js
 ```
+the application would run in localhost:3001
