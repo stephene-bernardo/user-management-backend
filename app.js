@@ -80,7 +80,7 @@ InitDb(sequelize).then(() => {
     });
 
   app.post('/login',
-    passport.authenticate('local', { failureRedirect: '/login' }),
+    passport.authenticate('local'),
     function(req, res) {
       console.log(req.session)
       res.send(req.session);
@@ -99,8 +99,6 @@ InitDb(sequelize).then(() => {
     });
 
   app.post('/register', function(req, res, next) {
-    console.log('hiiii')
-    console.log(req.body);
     userApi.insert(req.body.firstname, req.body.lastname, req.body.username).then(async result => {
       await userAuthApi.insert(result.id, req.body.password);
       next()
