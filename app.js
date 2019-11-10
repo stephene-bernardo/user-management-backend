@@ -56,6 +56,7 @@ passport.use(new Strategy(
     if(!bcrypt.compareSync(password, userAuth.password)){
       return cb(null, false);
     }
+    console.log('zzzz')
     return cb(null, user);
 
   }));
@@ -105,6 +106,7 @@ InitDb(sequelize).then(() => {
     })
   }, passport.authenticate('local', { failureRedirect: '/login' }), 
   function(req, res) {
+    console.log('aaaa')
     res.send("registration completed");
   });
 
